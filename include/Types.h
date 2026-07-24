@@ -6,14 +6,15 @@ using Price = std::int32_t;
 using Quantity = std::uint32_t;
 using OrderId = std::uint64_t;
 
-enum class Side
-{
+enum class Side {
     Buy,
     Sell
 };
 
-enum class OrderType
-{
+enum class OrderType {
+    Limit,
+    Market,
+    ImmediateOrCancel,
     GoodTillCancel,
     FillAndKill
 };

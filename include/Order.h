@@ -1,13 +1,6 @@
-#pragma once 
+#pragma once
 
-#include <cstdint>
 #include "Types.h"
-
-enum class Side : std::uint8_t {
-    Buy,
-    Sell
-};
-
 
 class Order {
 private:
@@ -15,18 +8,44 @@ private:
     Quantity quantity;
     Price price;
     Side side;
+    OrderType type;
 
 public:
     Order() = default;
 
-    Order(OrderId id, Quantity quantity, Price price, Side side)
-        : id(id), quantity(quantity), price(price), side(side) {}
+    Order(OrderId id, Quantity quantity, Price price, Side side, OrderType type)
+        : id(id),
+          quantity(quantity),
+          price(price),
+          side(side),
+          type(type)
+    {
+    }
 
-    [[nodiscard]] OrderId getID() const noexcept { return id; }
-    [[nodiscard]] Quantity getQuantity() const noexcept { return quantity; }
-    [[nodiscard]] Price getPrice() const noexcept { return price; }
-    [[nodiscard]] Side getSide() const noexcept { return side; }
+    [[nodiscard]] OrderId getID() const noexcept {
+        return id;
+    }
 
-    void setQuantity(Quantity newQuantity) noexcept { quantity = newQuantity; }
-    [[nodiscard]] bool isFilled() const noexcept { return quantity == 0; }
+    [[nodiscard]] Quantity getQuantity() const noexcept {
+        return quantity;
+    }
+
+    [[nodiscard]] Price getPrice() const noexcept {
+        return price;
+    }
+
+    [[nodiscard]] Side getSide() const noexcept {
+        return side;
+    }
+    [[nodiscard]] OrderType getType() const noexcept {
+        return type;
+    }
+
+    void setQuantity(Quantity newQuantity) noexcept {
+        quantity = newQuantity;
+    }
+
+    [[nodiscard]] bool isFilled() const noexcept {
+        return quantity == 0;
+    }
 };

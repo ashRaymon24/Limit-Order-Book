@@ -1,73 +1,100 @@
 #include "OrderBook.h"
-#include <iostream>
-#include <algorithm>
 
+void OrderBook::addOrder(const Order& order)
+{
+    if (order.getSide() == Side::Buy)
+    {
+        auto& level = bids[order.getPrice()];
 
-void OrderBook::addOrder(const Order& order) {
-    if (order.getSide() == Side::Buy) {
-        bids[order.getPrice()].emplace_back(order);
-    } else {
-        asks[order.getPrice()].emplace_back(order);
-    }
-}
-       
-void OrderBook::matchOrder(Order& incomingOrder){
-    if (incomingOrder.getSide() == Side::Buy) {
-        auto it = asks.begin();
-        while (incomingOrder.getQuantity() > 0 && it != asks.end()) {
-            Price bestPrice = it->first;
-            if (bestPrice > incomingOrder.getPrice()){
-                break; // No more matching possible
-            }
-            auto& ordersAtPrice = it->second;
-            while (!ordersAtPrice.empty() && incomingOrder.getQuantity() > 0) {
-                Order& existingOrder = ordersAtPrice.front();
-                Quantity matchQuantity = std::min(incomingOrder.getQuantity(), existingOrder.getQuantity());
-                incomingOrder.setQuantity(incomingOrder.getQuantity() - matchQuantity);
-                existingOrder.setQuantity(existingOrder.getQuantity() - matchQuantity);
-                if (existingOrder.getQuantity() == 0) {
-                    ordersAtPrice.pop_front(); // Remove fully matched order
-                }
-            }
-            if (ordersAtPrice.empty()) {
-                it = asks.erase(it);
-            } else {
-                ++it;
-            }
-        }
-    } else {
-        auto it = bids.begin();
-        while (incomingOrder.getQuantity() > 0 && it != bids.end()) {
-            Price bestPrice = it->first;
-            if (bestPrice < incomingOrder.getPrice()) {
-                break; // No more matching possible
-            }
-            auto& ordersAtPrice = it->second;
-            while (!ordersAtPrice.empty() && incomingOrder.getQuantity() > 0) {
-                Order& existingOrder = ordersAtPrice.front();
-                Quantity matchQuantity = std::min(incomingOrder.getQuantity(), existingOrder.getQuantity());
-                incomingOrder.setQuantity(incomingOrder.getQuantity() - matchQuantity);
-                existingOrder.setQuantity(existingOrder.getQuantity() - matchQuantity);
-                if (existingOrder.getQuantity() == 0) {
-                    ordersAtPrice.pop_front(); // Remove fully matched order
-                }
-            }
-            if (ordersAtPrice.empty()) {
-                it = bids.erase(it);
-            } else {
-                ++it;
-            }
+        level.addOrder(order);
+
+        orderIdMap[order.getID()] = {
+            level.lastIterator(),
+            order.getPrice(),
+            order.getSide()
         };
-    };
-}
-void OrderBook::processOrder(Order order) {
-    matchOrder(order);
-    if (order.getQuantity() > 0) {
-        addOrder(order);
+    }
+    else
+    {
+        auto& level = asks[order.getPrice()];
+
+        level.addOrder(order);
+
+        orderIdMap[order.getID()] = {
+            level.lastIterator(),
+            order.getPrice(),
+            order.getSide()
+        };
     }
 }
-        
-void OrderBook::printOrders() const {
+
+bool OrderBook::cancelOrder(OrderId orderId)
+{
+    auto it = orderIdMap.find(orderId);
+
+    if (it == orderIdMap.end())
+    {
+        return false;
+    }
+
+    auto [orderIterator, price, side] = it->second;
+
+    if (side == Side::Buy)
+    {
+        bids[price].eraseOrder(orderIterator);
+
+    }
+    else
+    {
+        asks[price].eraseOrder(orderIterator);
+    }
+
+    orderIdMap.erase(it);
+
+    return true;
+}
+
+bool OrderBook::modifyOrder(OrderId orderId, Price newPrice, Quantity newQuantity)
+{
+    auto it = orderIdMap.find(orderId);
+
+    if (it == orderIdMap.end())
+    {
+        return false;
+    }
+
+    Side side = std::get<2>(it->second);
+    if (!cancelOrder(orderId)) {
+        return false;
+    }
+    Order modifiedOrder(orderId, newQuantity, newPrice, side, OrderType::Limit);
+    addOrder(modifiedOrder);
+
+    return true;
+}
+
+void OrderBook::printOrders() const
+{
     printSide(bids);
     printSide(asks);
+}
+
+auto& OrderBook::getBids()
+{
+    return bids;
+}
+
+auto& OrderBook::getAsks()
+{
+    return asks;
+}
+
+const auto& OrderBook::getBids() const
+{
+    return bids;
+}
+
+const auto& OrderBook::getAsks() const
+{
+    return asks;
 }
