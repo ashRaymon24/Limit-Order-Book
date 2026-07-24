@@ -77,6 +77,10 @@ bool MatchingEngine::cancelOrder(OrderId orderId) {
     return orderBook.cancelOrder(orderId);
 }
 
+bool MatchingEngine::modifyOrder(OrderId orderId, Price newPrice, Quantity newQuantity) {
+    return orderBook.modifyOrder(orderId, newPrice, newQuantity);
+}
+
 void MatchingEngine::printOrderBook() const {
     orderBook.printOrders();
 }

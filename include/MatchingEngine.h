@@ -15,6 +15,8 @@ public:
 
     void processOrder(Order order);
 
+    bool modifyOrder(OrderId orderId, Price newPrice, Quantity newQuantity);
+
     bool cancelOrder(OrderId orderId);
 
     void printOrderBook() const;
