@@ -79,22 +79,22 @@ void OrderBook::printOrders() const
     printSide(asks);
 }
 
-auto& OrderBook::getBids()
+std::map<Price, PriceLevel, std::greater<Price>>& OrderBook::getBids()
 {
     return bids;
 }
 
-auto& OrderBook::getAsks()
+std::map<Price, PriceLevel>& OrderBook::getAsks()
 {
     return asks;
 }
 
-const auto& OrderBook::getBids() const
+const std::map<Price, PriceLevel, std::greater<Price>>& OrderBook::getBids() const
 {
     return bids;
 }
 
-const auto& OrderBook::getAsks() const
+const std::map<Price, PriceLevel>& OrderBook::getAsks() const
 {
     return asks;
 }

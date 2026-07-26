@@ -31,11 +31,13 @@ public:
 
     void printOrders() const;
 
-    auto& getBids();
-    auto& getAsks();
+    std::map<Price, PriceLevel, std::greater<Price>>& getBids();
 
-    const auto& getBids() const;
-    const auto& getAsks() const;
+    std::map<Price, PriceLevel>& getAsks();
+
+    const std::map<Price, PriceLevel, std::greater<Price>>& getBids() const;
+
+    const std::map<Price, PriceLevel>& getAsks() const;
 };
 
 template<typename Map>

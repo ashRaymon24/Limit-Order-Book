@@ -1,0 +1,28 @@
+# Build outputs
+*.exe
+*.out
+*.o
+*.obj
+
+# Debug symbols
+*.pdb
+
+# Generated files
+orders.csv
+
+# VS Code
+.vscode/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# CMake (if added later)
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Logs
+*.log

@@ -1,4 +1,3 @@
-#pragma once
 #include "CSVEngine.h"
 
 #include <iostream>
@@ -32,16 +31,18 @@ void CSVEngine::replay(const std::string& filename) {
         while (std::getline(ss, cell, ',')) {
             row.push_back(cell);
         }
-
+        if (row.empty()) {
+            continue; // Skip empty lines
+        }
         // Assuming the CSV has the following columns: OrderId, Side, Price, Quantity, OrderType
         std::string command = row[0];
         try {
                 if (command == "ADD" && row.size() == 6) {
                 OrderId orderId = static_cast<OrderId>(std::stoull(row[1]));
                 Side side;
-                if (row[2] == "Buy") {
+                if (row[2] == "BUY") {
                     side = Side::Buy;
-                } else if (row[2] == "Sell") {
+                } else if (row[2] == "SELL") {
                     side = Side::Sell;
                 } else {
                     std::cerr << "Unknown side: " << row[2] << std::endl;
@@ -50,7 +51,7 @@ void CSVEngine::replay(const std::string& filename) {
                 Price price = std::stoi(row[3]);
                 Quantity quantity = std::stoul(row[4]);
                 OrderType orderType;
-                if (row[5] == "Market") {
+                if (row[5] == "MARKET") {
                     orderType = OrderType::Market;
                 } else if (row[5] == "IOC") {
                     orderType = OrderType::ImmediateOrCancel;
